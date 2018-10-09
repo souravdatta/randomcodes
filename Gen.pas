@@ -11,7 +11,8 @@ var
   Limit: integer;
   Slen: integer;
   I, J, K: integer;
-  NumStr: string;
+  NumStr: array of char;
+  Key: string;
   Duplicate: integer;
 begin
   Limit := 10;
@@ -24,29 +25,34 @@ begin
     Slen := StrToInt(ParamStr(2));
   end;
 
+  SetLength(NumStr, Slen);
+
   for I := 1 to Limit do
   begin
     Duplicate := 1;
     while Duplicate = 1 do
     begin
-      NumStr := '';
       for J := 1 to Slen do
       begin
         K := Random(9) + 1;
-        NumStr := Concat(NumStr, IntToStr(K));
+        NumStr[J - 1] := Chr(Ord('0') + K);
       end;
 
-      if HashTable.Find(NumStr) = nil then
+      SetString(Key, PChar(@NumStr[0]), Slen);
+
+      if HashTable.Find(Key) = nil then
       begin
-        WriteLn(NumStr);
-        HashTable[NumStr] := '1';
+        WriteLn(Key);
+        HashTable[Key] := '1';
         Duplicate := 0;
       end
       else
       begin
-        WriteLn(StdErr, 'Duplicate = ', NumStr);
+        WriteLn(StdErr, 'Duplicate = ', Key);
       end;
     end;
   end;
+
+  NumStr := nil;
   HashTable.Free;
 end.
